@@ -1,0 +1,54 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: kube-system
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+      - name: jenkins
+        image: registry.cn-hangzhou.aliyuncs.com/alicai/jenkins:2.7.2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: web
+          protocol: TCP
+        - containerPort: 5000
+          name: agent
+          protocol: TCP
+        volumeMounts:
+        - name: jenkinshome
+          mountPath: /jenkins_home
+        env:
+        - name: JAVA_OPTS
+          value: "-Duser.timezone=Asia/Shanghai"
+      volumes:
+      - name: jenkinshome
+        hostPath:
+          path: /var/jenkins_home
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jenkins
+  namespace: kube-system
+spec:
+  selector:
+    app: jenkins
+  ports:
+  - name: web
+    port: 8080
+    targetPort: 8080
+  - name: agent
+    port: 5000
+    targetPort: 5000

@@ -1,0 +1,33 @@
+# 编辑ingress对象yaml文件；
+# 在”spec”域下新增“tls”子域，”hosts”字段加入多域名，“secretName”字段调用对应的Secret资源；
+# 1个ingress对象只能使用1个Secret对象（“secretName”字段value唯一），即只能使用1个证书，该正式需要支持”hosts”字段下所有域名；
+# “secretName”字段一定要置于域名列表最后的位置；
+# ”hosts”字段的域名需要匹配”rules”字段域名；
+# ingress默认情况下，当不配置证书或者证书配置错误时，会默认给出一个tls证书；如“secretName”字段配置了2个值，则所有域名采用默认证书；如”hosts”字段少配置一个域名，缺失的域名会采用默认证书；
+# 更新ingress证书可能需要等待一段时间才能生效
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: jenkins-ingress2
+  namespace: kube-system
+  annotations:
+    kubernetes.io/ingress.class: "test2"
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/session-cookie-hash: sha1
+    nginx.ingress.kubernetes.io/session-cookie-name: route
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - host: prometheus.cai    # 通过虚拟域名访问:
+    http:
+      paths:
+      - backend:
+          serviceName: prometheus-svc
+          servicePort: 9090
+  - host: jenkins.cai   # 通过虚拟域名访问
+    http:
+      paths:
+      - backend:
+          serviceName: jenkins
+          servicePort: 8080
+

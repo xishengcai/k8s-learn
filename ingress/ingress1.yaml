@@ -1,0 +1,32 @@
+#apiVersion: v1
+#data:
+#  tls.crt: base64 encoded cert
+#  tls.key: base64 encoded key
+#kind: Secret
+#metadata:
+#  name: testsecret-tls
+#  namespace: default
+#type: Opaque
+#kubectl create secret tls ingress-tls --cert=/etc/kubernetes/pki/ca.crt --key=/etc/kubernetes/pki/ca.key -n kube-system
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: jenkins-ingress
+  namespace: kube-system
+  annotations:
+    kubernetes.io/ingress.class: "test1"
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/session-cookie-hash: sha1
+    nginx.ingress.kubernetes.io/session-cookie-name: route
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"  # 默认开启https
+spec:
+  tls:
+  - hosts:
+    secretName: ingress1-tls
+  rules:
+  - http:     # 直接通过ingress controller 的ip访问
+      paths:
+      - backend:
+          serviceName: jenkins
+          servicePort: 8080

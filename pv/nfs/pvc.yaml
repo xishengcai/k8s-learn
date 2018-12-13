@@ -1,0 +1,9 @@
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-pvc1
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

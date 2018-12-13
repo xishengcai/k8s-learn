@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pv1
+  labels:
+    name: nginx-pv1
+spec:
+  containers:
+  - name: nginx-pv1
+    image: nginx
+    ports:
+    - name: backend
+      containerPort: 80
+    volumeMounts:
+    - name: nfs-vol
+      mountPath: /etc/nginx/a
+    - name: nfs-vo2
+      mountPath: /etc/nginx/b
+  volumes:
+  - name: nfs-vol
+    persistentVolumeClaim:
+      claimName: pv0001
+  - name: nfs-vo2
+    nfs:
+      server: 115.231.145.73
+      path: /home/nfs/pv1
+
+
