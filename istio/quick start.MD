@@ -2,7 +2,7 @@
 
 ### 基本操作步骤
 - 下载istio安装包,并且将istioctl复制到bin目录
-- 自动sidecar注入的Istio
+- (略)自动sidecar注入的Istio
 - 如果没有第二步,手动为要创建的应用注入sidecar
 - 为应用创建service
 - 创建Gateway以启用到群集的HTTP（S）流量
@@ -17,18 +17,23 @@
     kubectl create -f install/kubernetes/istio-demo-auth.yaml
 
 ### 安装示例bookinfo
-   安装bookinfo
+   安装官方提供的示例程序: bookinfo
+
    ```kubectl apply -f <(istioctl kube-inject -f samples/bookinfo/platform/kube/bookinfo.yaml)```
-   修改ingressgateway为Nodeport方式暴露服务
+
+   修改 ingressgateway 为 Nodeport 方式暴露服务
+
    ```kubectl edit svc istio-ingressgateway -n istio-system```
 
    修改服务器暴露方式
    type: LoadBlancer  --> type: NodePort
+
    ```kubectl edit svc istio-ingressgateway -n istio-system```
 
 ### 创建网关
    如果我们要对集群外暴露服务网格的应用,就需要创建一个Gateway.Gateway. 描述了在网络边缘运行的负载均衡器，
    用于接收传入或传出的HTTP / TCP连接。
+
    ```
     apiVersion: networking.istio.io/v1alpha3
     kind: Gateway
@@ -80,6 +85,7 @@
    它还可以执行更多操作，例如定义一组流量路由规则，以便在主机被寻址时应用，但我们不会深入介绍这些细节
 
    ```host: productpage```
+
    请注意, VirtaulService通过 host 这个标签引用Kubernetes的SVC服务。
 
    在浏览器中访问页面 http://nodeip:31380/productpage
@@ -239,10 +245,13 @@
 
    - 实验二： 将来自特定用户的请求路由到 reviews:v2
    通过将来自 productpage 的流量路由到 reviews:v2 实例，为测试用户 “jason” 启用 ratings 服务。
+
    ``` istioctl replace -f samples/bookinfo/networking/virtual-service-reviews-test-v2.yaml```
+
    在 productpage 网页上以用户 “jason” 身份登录。
    您现在应该在每次评论旁边看到评分（1-5颗星）。 请注意，如果您以任何其他用户身份登录，您将会继续看到 reviews:v1 版本服务，
    即不包含星级评价的页面。
+
    ```istioctl get virtualservice reviews -o yaml```
 
    ```
