@@ -50,19 +50,4 @@
   Istioctl则针对Istio对CRD的操作进行了一些封装。Istioctl支持的功能参见该表格。
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 [Istio流量管理实现机制深度解析](https://mp.weixin.qq.com/s?__biz=MzIwNDIzODExOA==&mid=2650166252&idx=1&sn=759db7a50929ee6bef1eb8cd8f2d8329&chksm=8ec1cfa5b9b646b38999d57172211633d64176bec0206ed35191aad30e503765128819d963a2&scene=21#wechat_redirect)

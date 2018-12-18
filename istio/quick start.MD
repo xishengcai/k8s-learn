@@ -1,5 +1,14 @@
 ## istio 最佳实践
 
+### 基本操作步骤
+- 下载istio安装包,并且将istioctl复制到bin目录
+- 自动sidecar注入的Istio
+- 如果没有第二步,手动为要创建的应用注入sidecar
+- 为应用创建service
+- 创建Gateway以启用到群集的HTTP（S）流量
+- 创建VirtualService以通过Gateway公开Kubernetes服务
+- 如果要创建应用程序的多个版本，请先创建DestinationRule,然后在VirtualService引用的子集。
+
 ### 下载最新istio安装包
     curl -L https://git.io/getIstio | sh -
 
@@ -18,11 +27,105 @@
    ```kubectl edit svc istio-ingressgateway -n istio-system```
 
 ### 创建网关
-   kubectl create -f samples/bookinfo/networking/bookinfo-gateway.yaml
+   如果我们要对集群外暴露服务网格的应用,就需要创建一个Gateway.Gateway. 描述了在网络边缘运行的负载均衡器，
+   用于接收传入或传出的HTTP / TCP连接。
+   ```
+    apiVersion: networking.istio.io/v1alpha3
+    kind: Gateway
+    metadata:
+      name: bookinfo-gateway
+    spec:
+      selector:
+        istio: ingressgateway # use istio default controller
+      servers:
+      - port:
+          number: 80
+          name: http
+          protocol: HTTP
+        hosts:
+        - "*"
+   ```
+
+   ```kubectl create -f samples/bookinfo/networking/bookinfo-gateway.yaml```
+   我们已经为集群启用了HTTP流量。
+
+### VirtualService
+   ```
+   apiVersion: networking.istio.io/v1alpha3
+   kind: VirtualService
+   metadata:
+     name: bookinfo
+   spec:
+     hosts:
+     - "*"
+     gateways:
+     - bookinfo-gateway
+     http:
+     - match:
+       - uri:
+           exact: /productpage
+       - uri:
+           exact: /login
+       - uri:
+           exact: /logout
+       - uri:
+           prefix: /api/v1/products
+       route:
+       - destination:
+           host: productpage
+           port:
+             number: 9080
+   ```
+   这里的VirtualService实际上将Kubernetes服务连接到Istio网关。
+   它还可以执行更多操作，例如定义一组流量路由规则，以便在主机被寻址时应用，但我们不会深入介绍这些细节
+
+   ```host: productpage```
+   请注意, VirtaulService通过 host 这个标签引用Kubernetes的SVC服务。
+
    在浏览器中访问页面 http://nodeip:31380/productpage
    刷新页面可以发现reviews v1, v2, v3后端不停的轮询
+   这里的轮询是应为svc 的selector 选择的标签是: (app: reviews)
+   而在deployment的labels中定义两个key：value,  app: reviews, version: v*
 
-### 配置路由
+   ```
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    metadata:
+      name: reviews-v1
+    spec:
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            app: reviews
+            version: v1
+        spec:
+          containers:
+          - name: reviews
+            image: istio/examples-bookinfo-reviews-v1:1.9.0
+            imagePullPolicy: IfNotPresent
+            ports:
+            - containerPort: 9080
+   ```
+
+  ```
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: reviews
+      labels:
+        app: reviews
+    spec:
+      ports:
+      - port: 9080
+        name: http
+      selector:
+        app: reviews
+  ```
+
+### DestinationRule
+  在某些时候，您希望将应用更新为新版本。 也许你想分割两个版本之间的流量。
+  您需要创建一个DestinationRule来定义那些版本，在Istio中称为子集。
    - 实验一： 只访问reviews：v1
    创建路由规则(我们上面用的是istio-demo-auth, 所以这里需要使用启用了mTLS的路由规则)
    ```
@@ -165,4 +268,3 @@
            host: reviews
            subset: v1
     ```
-
