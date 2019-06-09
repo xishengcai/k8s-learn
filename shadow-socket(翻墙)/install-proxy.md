@@ -6,7 +6,8 @@
    在境外代理机器上通过pip安装shadowsocks,并且启动服务端程序
    [如果您还没有代理机,可以使用该连接购买,支持淘宝,千兆网速,一个月500G流量,19$](https://bandwagonhost.com/aff.php?aff=39010)
    ```
-   yum -y install epel-release python-pip shadowsocks
+   yum -y install epel-release python-pip automake
+   pip install shadowsocks
    ```
 
    ```
