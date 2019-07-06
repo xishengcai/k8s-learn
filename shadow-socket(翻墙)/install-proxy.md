@@ -4,7 +4,7 @@
 
 ### server
    在境外代理机器上通过pip安装shadowsocks,并且启动服务端程序
-   [如果您还没有代理机,k而已选择在阿里云上购买一台香港服务器,虽然有点贵，但是稳定不，不会被墙]https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=j7wyhezj)
+   [如果您还没有代理机,可以选择在阿里云上购买一台香港服务器,虽然有点贵，但是稳定不，不会被墙]https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=j7wyhezj)
    ```
    yum -y install epel-release python-pip automake
    pip install shadowsocks
