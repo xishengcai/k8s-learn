@@ -11,7 +11,7 @@ pip install shadowsocks
  ```
 
    ```
-cat <<EOF>> /etc/shadowsocks.conf
+cat <<EOF> /etc/shadowsocks.conf
 {
         "server":"0.0.0.0",
         "server_port": 12345 ,
@@ -39,7 +39,7 @@ yum -y install epel-release python-pip shadowsocks
    12345是境外服务器shadowSocket暴露的端口,
    local_port是你本地shadowSocket监听的端口
 ```
-cat <<EOF>> /etc/shadowsocks.conf
+cat <<EOF> /etc/shadowsocks.conf
 {
         "server":"server_ip",
         "server_port":12345 ,
