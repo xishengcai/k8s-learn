@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: curl
+  namespace: dev
+spec:
+  containers:
+    - name: curl
+      image: registry.cn-hangzhou.aliyuncs.com/zt_devops/curl
+      command:
+        - tail
+        - -f
+        - /etc/hosts
+      imagePullPolicy: IfNotPresent
+  restartPolicy: Always
