@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: istio-ingress
+  namespace: istio-system
+spec:
+  rules:
+    - host: kiali.zt.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: kiali
+              servicePort: 20001
+    - host: grafana.zt.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: grafana
+              servicePort: 3000
+    - host: tracing.zt.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: tracing
+              servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: vistio-web
+spec:
+  rules:
+    - host: vistio-web.zt.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: vistio-web
+              servicePort: 8080
