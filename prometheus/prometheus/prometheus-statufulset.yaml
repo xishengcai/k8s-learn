@@ -96,13 +96,15 @@ spec:
         - name: config-volume
           configMap:
             name: prometheus-config
-  volumeClaimTemplates:
-    - metadata:
-        name: prometheus-data
-      spec:
-        storageClassName: standard
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: "16Gi"
+        - name: data
+          emptyDir: {}
+#  volumeClaimTemplates:
+#    - metadata:
+#        name: prometheus-data
+#      spec:
+#        storageClassName: standard
+#        accessModes:
+#          - ReadWriteOnce
+#        resources:
+#          requests:
+#            storage: "16Gi"
