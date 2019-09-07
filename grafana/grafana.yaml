@@ -1,15 +1,24 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: monitoring-grafana
-  namespace: kube-system
+  labels:
+    app: grafana
+    version: latest
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/release: grafana
+  name: grafana
+  namespace: kube-
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: grafana
+      app.kubernetes.io/release: grafana
   template:
     metadata:
       labels:
-        task: monitoring
-        k8s-app: grafana
+        app.kubernetes.io/name: grafana
+        app.kubernetes.io/release: grafana
     spec:
       containers:
         - name: grafana
@@ -41,20 +50,26 @@ spec:
       volumes:
         - name: grafana-storage
           emptyDir: {}
+
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
+  name: grafana
   labels:
-    kubernetes.io/cluster-service: 'true'
-    kubernetes.io/name: monitoring-grafana
-  name: monitoring-grafana
-  namespace: kube-system
+    app: grafana
+    version: latest
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/release: grafana
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/tcp-probe: 'true'
+    prometheus.io/tcp-probe-port: '80'
 spec:
-  type: NodePort
   ports:
     - port: 3000
       targetPort: 3000
-      nodePort: 30300
   selector:
-    k8s-app: grafana
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/release: grafana
