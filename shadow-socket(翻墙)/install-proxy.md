@@ -3,7 +3,7 @@
 下面介绍怎么搭建代理
 
 ### server
-在境外代理机器上通过pip安装shadowsocks,并且启动服务端程序
+在境外代理机器上通过pip安装shadowsocks,并且启动服务端程序<br>
 [如果您还没有代理机,可以选择在阿里云上购买一台香港服务器,虽然有点贵，但是稳定不，不会被墙]https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=j7wyhezj)
 ```
 yum -y install epel-release python-pip automake
@@ -34,10 +34,9 @@ EOF
 ```
 yum -y install epel-release python-pip shadowsocks
 ```
-
-   编写配置文件,将server_ip修改为你境外的服务器ip地址,
-   12345是境外服务器shadowSocket暴露的端口,
-   local_port是你本地shadowSocket监听的端口
+编写配置文件,将server_ip修改为你境外的服务器ip地址 <br>
+12345是境外服务器shadowSocket暴露的端口 <br>
+local_port是你本地shadowSocket监听的端口 <br>
 ```
 cat <<EOF> /etc/shadowsocks.conf
 {
@@ -61,9 +60,8 @@ Autoconf 及 Automake 这两套工具来协助我们自动产生 Makefile文件
 ```
 yum -y install gcc wget autoconf
 ```
-
-  下载privoxy,用于将shadowSocket加密的数据转换为http协议,
-  如果无法下载,clone本项目,我已下载好
+下载privoxy,用于将shadowSocket加密的数据转换为http协议<br>
+如果无法下载,clone本项目,我已下载好
 ```
 wget http://www.privoxy.org/sf-download-mirror/Sources/3.0.26%20%28stable%29/privoxy-3.0.26-stable-src.tar.gz
 tar -zxvf privoxy-3.0.26-stable-src.tar.gz
@@ -78,7 +76,7 @@ autoheader && autoconf
 make && make install
 ```
 
-  在文件/usr/local/etc/privoxy/config中找到下面两行,去掉注释
+在文件/usr/local/etc/privoxy/config中找到下面两行,去掉注释
 ```
 forward-socks5t   /               127.0.0.1:1080
 listen-address  127.0.0.1:8118
@@ -88,9 +86,9 @@ listen-address  127.0.0.1:8118
 `privoxy --user privoxy /usr/local/etc/privoxy/config  # 以用户privoxy 的身份运行指定配置文件`
     
 ### 配置环境变量
-export http_proxy=http://127.0.0.1:8118 
-export https_proxy=http://127.0.0.1:8118 
-export ftp_proxy=http://127.0.0.1:8118
+export http_proxy=http://127.0.0.1:8118 <br>
+export https_proxy=http://127.0.0.1:8118 <br>
+export ftp_proxy=http://127.0.0.1:8118 <br>
 
 ### windows client
 [windows 小飞机代理工具](https://github.com/shadowsocks/shadowsocks-windows/releases)
@@ -99,10 +97,10 @@ export ftp_proxy=http://127.0.0.1:8118
 ### 总结
 ```
 服务端（socket5 协议）  - - - - -  客户端 （socket5协议）
-									|
-									|
-						  privoxy（socket5 和 http协议互转）
-									|
-									|
-                             具体应用curl, yum,wget等
+			             |
+			             |
+			privoxy（socket5 和 http协议互转）
+			             |
+			             |
+                        具体应用curl, yum,wget等
 ```
